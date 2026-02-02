@@ -24,6 +24,12 @@ var (
 
 	// stringPattern matches quoted strings (single quotes, double quotes, or backticks)
 	stringPattern = regexp.MustCompile("[\"'`]([^\"'`]+)[\"'`]")
+
+	// ES module preprocessing patterns
+	// importPattern matches ES6 import statements
+	importPattern = regexp.MustCompile(`(?m)^\s*import\s+.*?from\s+['"][^'"]+['"];?\s*$|^\s*import\s+['"][^'"]+['"];?\s*$`)
+	// exportPattern matches ES6 export statements
+	exportPattern = regexp.MustCompile(`(?m)^\s*export\s+(default\s+)?`)
 )
 
 // IsPathCommonJSLibraryFile checks if a given path is a common js library file.
@@ -78,18 +84,16 @@ func preprocessModuleCode(data string) string {
 	// import { X } from 'module'
 	// import * as X from 'module'
 	// import 'module'
-	importRe := regexp.MustCompile(`(?m)^\s*import\s+.*?from\s+['"][^'"]+['"];?\s*$|^\s*import\s+['"][^'"]+['"];?\s*$`)
-	data = importRe.ReplaceAllString(data, "")
-	
+	data = importPattern.ReplaceAllString(data, "")
+
 	// Remove export statements (multiple forms):
 	// export default X
 	// export { X }
 	// export function X() {}
 	// export class X {}
 	// export const X = ...
-	exportRe := regexp.MustCompile(`(?m)^\s*export\s+(default\s+)?`)
-	data = exportRe.ReplaceAllString(data, "")
-	
+	data = exportPattern.ReplaceAllString(data, "")
+
 	return data
 }
 
