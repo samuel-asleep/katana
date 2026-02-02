@@ -21,6 +21,9 @@ var (
 		// API endpoints
 		regexp.MustCompile(`(?i)(?:["\x60']|:\s*)(/api/[a-zA-Z0-9_\-/.?=&]+)(?:["\x60']|\s|,|;)`),
 	}
+
+	// stringPattern matches quoted strings (single quotes, double quotes, or backticks)
+	stringPattern = regexp.MustCompile("[\"'`]([^\"'`]+)[\"'`]")
 )
 
 // IsPathCommonJSLibraryFile checks if a given path is a common js library file.
@@ -63,7 +66,6 @@ func extractFromValidJS(data string, seen map[string]bool) []JSLuiceEndpoint {
 	var endpoints []JSLuiceEndpoint
 
 	// Extract quoted strings that look like URLs/paths
-	stringPattern := regexp.MustCompile("[\"'`]([^\"'`]+)[\"'`]")
 	matches := stringPattern.FindAllStringSubmatch(data, -1)
 
 	for _, match := range matches {
