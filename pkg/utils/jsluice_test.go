@@ -75,6 +75,12 @@ func TestExtractJsluiceEndpoints(t *testing.T) {
 			checkContains: []string{"https://example.com/data", "/api/config"},
 		},
 		{
+			name:          "backtick template strings",
+			jsCode:        "const url = `https://example.com/api/v1`; const path = `/api/test`;",
+			wantEndpoints: 2,
+			checkContains: []string{"https://example.com/api/v1", "/api/test"},
+		},
+		{
 			name:          "empty string",
 			jsCode:        ``,
 			wantEndpoints: 0,

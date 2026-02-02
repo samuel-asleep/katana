@@ -63,7 +63,7 @@ func extractFromValidJS(data string, seen map[string]bool) []JSLuiceEndpoint {
 	var endpoints []JSLuiceEndpoint
 
 	// Extract quoted strings that look like URLs/paths
-	stringPattern := regexp.MustCompile(`["'\x60]([^"'\x60]+)["'\x60]`)
+	stringPattern := regexp.MustCompile("[\"'`]([^\"'`]+)[\"'`]")
 	matches := stringPattern.FindAllStringSubmatch(data, -1)
 
 	for _, match := range matches {
@@ -100,7 +100,7 @@ func extractFromRegex(data string, seen map[string]bool) []JSLuiceEndpoint {
 			if len(match) > 0 {
 				value := strings.TrimSpace(match[0])
 				// Clean up quotes if present
-				value = strings.Trim(value, `"'\x60 ,;=`)
+				value = strings.Trim(value, "\"'` ,;=")
 
 				if isValidEndpoint(value) && !seen[value] {
 					seen[value] = true
