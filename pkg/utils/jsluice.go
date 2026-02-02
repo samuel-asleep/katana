@@ -50,6 +50,13 @@ func ExtractJsluiceEndpoints(data string) []JSLuiceEndpoint {
 
 	// Try to parse as JavaScript for better results
 	_, err := parser.ParseFile(nil, "", data, 0)
+	if err != nil {
+		_, moduleErr := parser.ParseFile(nil, "", data, parser.Module)
+		if moduleErr == nil {
+			err = nil
+		}
+	}
+
 	if err == nil {
 		// If valid JavaScript, extract string literals using regex
 		endpoints = extractFromValidJS(data, seen)
@@ -83,10 +90,7 @@ func extractFromValidJS(data string, seen map[string]bool) []JSLuiceEndpoint {
 
 	// Also apply regex patterns for better coverage
 	for _, urlEndpoint := range extractFromRegex(data, seen) {
-		if !seen[urlEndpoint.Endpoint] {
-			seen[urlEndpoint.Endpoint] = true
-			endpoints = append(endpoints, urlEndpoint)
-		}
+		endpoints = append(endpoints, urlEndpoint)
 	}
 
 	return endpoints
